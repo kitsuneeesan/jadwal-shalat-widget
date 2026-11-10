@@ -1,0 +1,31 @@
+<resources>
+    <string name="app_name">Jadwal Shalat</string>
+    <string name="widget_card">Jadwal Shalat</string>
+    <string name="widget_row">Jadwal Shalat · Baris</string>
+    <string name="widget_next">Shalat Berikutnya</string>
+
+    <string name="subuh">Subuh</string>
+    <string name="dzuhur">Dzuhur</string>
+    <string name="ashar">Ashar</string>
+    <string name="maghrib">Maghrib</string>
+    <string name="isya">Isya</string>
+    <string name="next">Berikutnya</string>
+    <string name="countdown_hm">%1$dj %2$dm</string>
+    <string name="countdown_m">%1$dm</string>
+    <string name="time_left">%1$s lagi</string>
+    <string name="offline">Offline</string>
+    <string name="tap_retry">ketuk untuk coba lagi</string>
+
+    <string name="auto_location">Lokasi otomatis</string>
+    <string name="province">Provinsi</string>
+    <string name="city">Kabupaten/Kota</string>
+    <string name="save">Simpan</string>
+    <string name="done">Selesai</string>
+    <string name="background_location">Ikuti lokasi saat app tertutup</string>
+    <string name="exact_alarm">Izinkan update countdown tiap menit</string>
+    <string name="need_location">Izinkan akses lokasi untuk deteksi otomatis.</string>
+    <string name="detecting">Mendeteksi lokasi…</string>
+    <string name="not_detected">Lokasi tidak terdeteksi, pakai lokasi terakhir.</string>
+    <string name="list_failed">Gagal memuat daftar: %1$s</string>
+    <string name="schedule_failed">Gagal memuat jadwal: %1$s</string>
+</resources>

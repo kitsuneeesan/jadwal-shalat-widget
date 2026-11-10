@@ -1,0 +1,16 @@
+<resources>
+    <!-- Widget, dark theme: deep smoky glass with white text. -->
+    <color name="w_base">#B80B0E0D</color>
+    <color name="w_sheen_start">#1FFFFFFF</color>
+    <color name="w_sheen_end">#03FFFFFF</color>
+    <color name="w_stroke">#2EFFFFFF</color>
+    <color name="w_text">#FFFFFF</color>
+    <color name="w_muted">#B3FFFFFF</color>
+    <color name="w_accent">#A8E6B4</color>
+    <color name="w_icon">#D9FFFFFF</color>
+    <color name="w_divider">#1FFFFFFF</color>
+    <color name="w_track">#29FFFFFF</color>
+    <color name="w_active_bg">#1AFFFFFF</color>
+    <color name="w_active_stroke">#29FFFFFF</color>
+    <color name="w_shadow">#00000000</color>
+</resources>

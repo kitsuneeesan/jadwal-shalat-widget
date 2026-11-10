@@ -1,0 +1,31 @@
+<resources>
+    <string name="app_name">Prayer Times</string>
+    <string name="widget_card">Prayer Times</string>
+    <string name="widget_row">Prayer Times · Row</string>
+    <string name="widget_next">Next Prayer</string>
+
+    <string name="subuh">Fajr</string>
+    <string name="dzuhur">Dhuhr</string>
+    <string name="ashar">Asr</string>
+    <string name="maghrib">Maghrib</string>
+    <string name="isya">Isha</string>
+    <string name="next">Next</string>
+    <string name="countdown_hm">%1$dh %2$dm</string>
+    <string name="countdown_m">%1$dm</string>
+    <string name="time_left">%1$s left</string>
+    <string name="offline">Offline</string>
+    <string name="tap_retry">tap to retry</string>
+
+    <string name="auto_location">Automatic location</string>
+    <string name="province">Province</string>
+    <string name="city">Regency/City</string>
+    <string name="save">Save</string>
+    <string name="done">Done</string>
+    <string name="background_location">Follow location while app is closed</string>
+    <string name="exact_alarm">Allow countdown to update every minute</string>
+    <string name="need_location">Allow location access for automatic detection.</string>
+    <string name="detecting">Detecting location…</string>
+    <string name="not_detected">Location not detected, using the last one.</string>
+    <string name="list_failed">Couldn\'t load the list: %1$s</string>
+    <string name="schedule_failed">Couldn\'t load the schedule: %1$s</string>
+</resources>
