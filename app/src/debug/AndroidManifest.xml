@@ -3,5 +3,8 @@
     <application>
         <!-- adb shell am start -n com.rizki.jadwalshalat/.PreviewActivity -->
         <activity android:name=".PreviewActivity" android:exported="true" />
+        <!-- Marketing shots; usage in ShowcaseActivity.kt -->
+        <activity android:name=".ShowcaseActivity" android:exported="true"
+            android:theme="@android:style/Theme.Material.NoActionBar.Fullscreen" />
     </application>
 </manifest>

@@ -28,6 +28,13 @@ class PreviewActivity : Activity() {
         thread {
             val previews = BaseWidget.previews(this)
             runOnUiThread {
+                for (p in listOf(0.3f, 0.65f, 0.9f, 1f)) {
+                    val frame = FrameLayout(this)
+                    frame.addView(BaseWidget.rowAt(this, p).apply(this, frame))
+                    col.addView(frame, LinearLayout.LayoutParams(((resources.displayMetrics.widthPixels / dp) - 32).toInt().let { (it * dp).toInt() }, (80 * dp).toInt()).apply {
+                        bottomMargin = (12 * dp).toInt()
+                    })
+                }
                 for (night in listOf(false, true)) {
                     val mode = Configuration(resources.configuration).apply {
                         uiMode = (uiMode and Configuration.UI_MODE_NIGHT_MASK.inv()) or

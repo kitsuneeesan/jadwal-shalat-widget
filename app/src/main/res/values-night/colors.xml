@@ -12,5 +12,7 @@
     <color name="w_track">#29FFFFFF</color>
     <color name="w_active_bg">#1AFFFFFF</color>
     <color name="w_active_stroke">#29FFFFFF</color>
+    <color name="w_warn">#FFC56B</color>
+    <color name="w_late">#FF7A70</color>
     <color name="w_shadow">#00000000</color>
 </resources>

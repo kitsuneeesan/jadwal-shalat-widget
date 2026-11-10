@@ -154,6 +154,34 @@ object Shalat {
         return 0 to 24 * 60 - nowMin + tomorrowSubuh.hour * 60 + tomorrowSubuh.minute
     }
 
+    /**
+     * The prayer whose time is running now and when it ends: Fajr until sunrise, Dhuhr..Maghrib until
+     * the next prayer, Isha until the next Fajr (also covers the hours after midnight). Null between
+     * sunrise and Dhuhr, when no obligatory prayer is due.
+     */
+    fun current(today: List<LocalTime>, sunrise: LocalTime, tomorrowSubuh: LocalTime, now: LocalTime): Pair<Int, LocalTime>? {
+        val n = now.withSecond(0).withNano(0)
+        return when {
+            n < today[0] -> 4 to today[0]
+            n < sunrise -> 0 to sunrise
+            n < today[1] -> null
+            else -> (4 downTo 1).first { n >= today[it] }.let { it to if (it < 4) today[it + 1] else tomorrowSubuh }
+        }
+    }
+
+    /** Whole minutes from [now] until [t], wrapping past midnight. */
+    fun minutesUntil(now: LocalTime, t: LocalTime): Int =
+        ((t.hour * 60 + t.minute) - (now.hour * 60 + now.minute) + 24 * 60) % (24 * 60)
+
+    /** Fraction of [start]..[end] that has passed at [now]; handles windows that cross midnight (Isha). */
+    fun elapsed(start: LocalTime, end: LocalTime, now: LocalTime): Float {
+        fun min(t: LocalTime) = t.hour * 60 + t.minute
+        val day = 24 * 60
+        val total = (min(end) - min(start) + day) % day
+        val done = (min(now) - min(start) + day) % day
+        return if (total == 0) 0f else (done.toFloat() / total).coerceIn(0f, 1f)
+    }
+
     /** Fraction of the gap between the previous prayer and the next one that has passed (0..1). */
     fun progress(times: List<LocalTime>, next: Int, minutes: Int): Float {
         fun min(t: LocalTime) = t.hour * 60 + t.minute

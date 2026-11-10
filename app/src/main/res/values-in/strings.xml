@@ -12,6 +12,8 @@
     <string name="next">Berikutnya</string>
     <string name="countdown_hm">%1$dj %2$dm</string>
     <string name="countdown_m">%1$dm</string>
+    <string name="now">Sekarang</string>
+    <string name="time_in">%1$s lagi</string>
     <string name="time_left">%1$s lagi</string>
     <string name="offline">Offline</string>
     <string name="tap_retry">ketuk untuk coba lagi</string>

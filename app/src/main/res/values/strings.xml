@@ -12,6 +12,8 @@
     <string name="next">Next</string>
     <string name="countdown_hm">%1$dh %2$dm</string>
     <string name="countdown_m">%1$dm</string>
+    <string name="now">Now</string>
+    <string name="time_in">in %1$s</string>
     <string name="time_left">%1$s left</string>
     <string name="offline">Offline</string>
     <string name="tap_retry">tap to retry</string>

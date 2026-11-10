@@ -15,6 +15,29 @@ class ShalatTest {
         assertEquals(0 to 51 + 4 * 60 + 31, Shalat.next(day, t("04:31"), t("23:09"))) // after Isya
     }
 
+    @Test fun currentPrayer() {
+        val sunrise = t("05:50")
+        val tomorrow = t("04:31")
+        assertEquals(4 to t("04:32"), Shalat.current(day, sunrise, tomorrow, t("02:00")))   // Isha from last night
+        assertEquals(0 to sunrise, Shalat.current(day, sunrise, tomorrow, t("04:32")))
+        assertEquals(null, Shalat.current(day, sunrise, tomorrow, t("05:50")))           // sunrise..Dhuhr
+        assertEquals(1 to t("15:39"), Shalat.current(day, sunrise, tomorrow, t("11:42")))
+        assertEquals(2 to t("17:56"), Shalat.current(day, sunrise, tomorrow, t("16:20:30")))
+        assertEquals(4 to tomorrow, Shalat.current(day, sunrise, tomorrow, t("23:59")))
+    }
+
+    @Test fun minutesUntil() {
+        assertEquals(81, Shalat.minutesUntil(t("16:30:40"), t("17:51")))
+        assertEquals(5 * 60 + 6, Shalat.minutesUntil(t("23:00"), t("04:06")))
+    }
+
+    @Test fun elapsedWindow() {
+        assertEquals(0.5f, Shalat.elapsed(t("15:00"), t("17:00"), t("16:00")), 1e-6f)
+        assertEquals(1f, Shalat.elapsed(t("15:00"), t("17:00"), t("17:00")), 1e-6f)
+        // Isha 19:00 -> Fajr 04:00 is 540 min; at 01:00 there are 360 done.
+        assertEquals(360f / 540, Shalat.elapsed(t("19:00"), t("04:00"), t("01:00")), 1e-6f)
+    }
+
     @Test fun progress() {
         // Dzuhur 11:42 -> Ashar 15:39 is 237 min; at 13:24 there are 135 left.
         assertEquals(102f / 237, Shalat.progress(day, 2, 135), 1e-6f)

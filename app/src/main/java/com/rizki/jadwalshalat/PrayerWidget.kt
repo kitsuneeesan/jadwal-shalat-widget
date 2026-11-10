@@ -1,5 +1,6 @@
 package com.rizki.jadwalshalat
 
+import android.animation.ArgbEvaluator
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
@@ -7,8 +8,10 @@ import android.appwidget.AppWidgetProvider
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.os.Build
 import android.util.SizeF
+import android.view.View
 import android.widget.RemoteViews
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -53,7 +56,18 @@ abstract class BaseWidget : AppWidgetProvider() {
         }
     }
 
-    private class State(val times: List<LocalTime>, val next: Int, val minutes: Int, val progress: Float)
+    /**
+     * [current] = prayer running now and when it ends (null between sunrise and Dhuhr).
+     * The widgets feature [focus]: the running prayer, or the next one when none is running.
+     * [minutes] = time left until it ends (running) or starts (next).
+     * [progress] = how much of the running prayer's window has passed, or of the wait for the next one.
+     */
+    private class State(
+        val times: List<LocalTime>, val next: Int, val current: Pair<Int, LocalTime>?,
+        val minutes: Int, val progress: Float,
+    ) {
+        val focus get() = current?.first ?: next
+    }
 
     companion object {
         private const val TICK = "com.rizki.jadwalshalat.TICK"
@@ -81,6 +95,7 @@ abstract class BaseWidget : AppWidgetProvider() {
         private val CELL = intArrayOf(R.id.cell_subuh, R.id.cell_dzuhur, R.id.cell_ashar, R.id.cell_maghrib, R.id.cell_isya)
         private val NAME = intArrayOf(R.id.name_subuh, R.id.name_dzuhur, R.id.name_ashar, R.id.name_maghrib, R.id.name_isya)
         private val TIME = intArrayOf(R.id.time_subuh, R.id.time_dzuhur, R.id.time_ashar, R.id.time_maghrib, R.id.time_isya)
+        private val BAR = intArrayOf(R.id.bar_subuh, R.id.bar_dzuhur, R.id.bar_ashar, R.id.bar_maghrib, R.id.bar_isya)
         private val LABEL = intArrayOf(R.string.subuh, R.string.dzuhur, R.string.ashar, R.string.maghrib, R.string.isya)
         private val ICON = intArrayOf(R.drawable.ic_subuh, R.drawable.ic_dzuhur, R.drawable.ic_ashar, R.drawable.ic_maghrib, R.drawable.ic_isya)
 
@@ -90,10 +105,18 @@ abstract class BaseWidget : AppWidgetProvider() {
             val now = LocalDateTime.now()
             val date = now.toLocalDate()
             val days = runCatching { Shalat.month(c, date.year, date.monthValue) }.getOrNull() ?: return null
-            val times = Shalat.find(days, date)?.let(Shalat::times) ?: return null
+            val day = Shalat.find(days, date) ?: return null
+            val times = Shalat.times(day)
             val tomorrowSubuh = Shalat.find(days, date.plusDays(1))?.let { Shalat.times(it)[0] } ?: times[0]
-            val (next, minutes) = Shalat.next(times, tomorrowSubuh, now.toLocalTime())
-            return State(times, next, minutes, Shalat.progress(times, next, minutes))
+            val time = now.toLocalTime()
+            val (next, toNext) = Shalat.next(times, tomorrowSubuh, time)
+            val current = Shalat.current(times, LocalTime.parse(day.getString("terbit")), tomorrowSubuh, time)
+            return if (current != null) {
+                val (i, end) = current
+                State(times, next, current, Shalat.minutesUntil(time, end), Shalat.elapsed(times[i], end, time))
+            } else {
+                State(times, next, null, toNext, Shalat.progress(times, next, toNext))
+            }
         }
 
         private fun views(c: Context, layout: Int, s: State?): RemoteViews {
@@ -105,26 +128,58 @@ abstract class BaseWidget : AppWidgetProvider() {
                 PendingIntent.getBroadcast(c, 1, Intent(c, PrayerWidget::class.java).setAction(TAP), PendingIntent.FLAG_IMMUTABLE),
             )
             if (s == null) {
-                v.setTextViewText(R.id.next_name, c.getString(R.string.offline))
-                v.setTextViewText(R.id.next_in, c.getString(R.string.tap_retry))
+                v.setTextViewText(R.id.focus_name, c.getString(R.string.offline))
+                v.setTextViewText(R.id.focus_in, c.getString(R.string.tap_retry))
                 return v
             }
+            // Running prayer: highlighted pill + a bar that turns red as its time runs out. Upcoming: accent name.
+            val bar = (s.progress * 1000).toInt()
+            val barColor = barColor(c, s)
+            val current = s.current?.first
             s.times.forEachIndexed { i, time ->
-                val active = i == s.next
+                val now = i == current
                 v.setTextViewText(TIME[i], hhmm(time))
-                v.setInt(CELL[i], "setBackgroundResource", if (active) R.drawable.cell_active else R.drawable.cell_idle)
-                textColor(c, v, NAME[i], if (active) R.color.w_accent else R.color.w_muted)
-                textColor(c, v, TIME[i], if (active) R.color.w_accent else R.color.w_text)
+                v.setInt(CELL[i], "setBackgroundResource", if (now) R.drawable.cell_active else R.drawable.cell_idle)
+                textColor(c, v, NAME[i], if (now || i == s.next) R.color.w_accent else R.color.w_muted)
+                textColor(c, v, TIME[i], if (now) R.color.w_accent else R.color.w_text)
+                v.setViewVisibility(BAR[i], if (now) View.VISIBLE else View.GONE)
+                if (now) {
+                    v.setProgressBar(BAR[i], 1000, bar, false)
+                    tint(v, BAR[i], barColor)
+                }
             }
-            v.setTextViewText(R.id.next_name, c.getString(LABEL[s.next]))
-            v.setTextViewText(R.id.next_time, hhmm(s.times[s.next]))
+            v.setTextViewText(R.id.focus_label, c.getString(if (s.current != null) R.string.now else R.string.next))
+            v.setTextViewText(R.id.focus_name, c.getString(LABEL[s.focus]))
+            v.setTextViewText(R.id.focus_time, hhmm(s.times[s.focus]))
             val h = s.minutes / 60
             val m = s.minutes % 60
             val left = if (h > 0) c.getString(R.string.countdown_hm, h, m) else c.getString(R.string.countdown_m, m)
-            v.setTextViewText(R.id.next_in, c.getString(R.string.time_left, left))
-            v.setImageViewResource(R.id.next_icon, ICON[s.next])
-            v.setProgressBar(R.id.progress, 1000, (s.progress * 1000).toInt(), false)
+            v.setTextViewText(R.id.focus_in, c.getString(if (s.current != null) R.string.time_left else R.string.time_in, left))
+            v.setImageViewResource(R.id.focus_icon, ICON[s.focus])
+            v.setProgressBar(R.id.progress, 1000, bar, false)
+            tint(v, R.id.progress, barColor)
             return v
+        }
+
+        /**
+         * Accent for the first half of the current prayer's window, then fading to amber and red near
+         * its end. Computed for the theme active at render time; re-rendered every minute.
+         */
+        private fun barColor(c: Context, s: State): Int {
+            val accent = c.getColor(R.color.w_accent)
+            if (s.current == null) return accent
+            val warn = c.getColor(R.color.w_warn)
+            val p = s.progress
+            val mix = ArgbEvaluator()
+            return when {
+                p < 0.5f -> accent
+                p < 0.8f -> mix.evaluate((p - 0.5f) / 0.3f, accent, warn) as Int
+                else -> mix.evaluate((p - 0.8f) / 0.2f, warn, c.getColor(R.color.w_late)) as Int
+            }
+        }
+
+        private fun tint(v: RemoteViews, id: Int, color: Int) {
+            if (Build.VERSION.SDK_INT >= 31) v.setColorStateList(id, "setProgressTintList", ColorStateList.valueOf(color))
         }
 
         /** By resource id where possible, so the launcher resolves it for the current light/dark theme. */
@@ -136,6 +191,10 @@ abstract class BaseWidget : AppWidgetProvider() {
             val s = state(c)
             return SIZES.map { (size, layout) -> size to views(c, layout, s) }
         }
+
+        /** The 4x1 row with the current prayer's window forced to [progress], to check the bar colours. */
+        internal fun rowAt(c: Context, progress: Float): RemoteViews =
+            views(c, R.layout.w_row, state(c)?.let { State(it.times, it.next, it.current, it.minutes, progress) })
 
         /** Blocking (may hit the network); call off the main thread. */
         fun render(c: Context) {
