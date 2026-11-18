@@ -66,7 +66,18 @@
   </tr>
 </table>
 
-<img src="docs/quran.png" alt="Quran verse widget at 4x2 and 4x1" width="60%" />
+<table>
+  <tr>
+    <td width="50%" align="center" valign="middle">
+      <img src="docs/quran-4x2.png" alt="Quran verse widget, 4x2" width="100%" /><br/>
+      <sub>Quran Verse · 4x2</sub>
+    </td>
+    <td width="50%" align="center" valign="middle">
+      <img src="docs/quran-4x1.png" alt="Quran verse widget, 4x1" width="100%" /><br/>
+      <sub>Quran Verse · Row · 4x1</sub>
+    </td>
+  </tr>
+</table>
 
 </div>
 
@@ -82,9 +93,6 @@ Grab [`release/jadwal-shalat.apk`](https://github.com/kitsuneeesan/jadwal-shalat
 Sideloading requires enabling "Install unknown apps" for whichever app you open it with.
 
 </div>
-
-> [!NOTE]
-> From 0.3.0 the app id is `com.kitsuneeesan.jadwalshalat`. If you installed 0.2.0 (`com.rizki.jadwalshalat`), uninstall it and add the widgets again.
 
 ---
 
