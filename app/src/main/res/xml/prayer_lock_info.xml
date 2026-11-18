@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Samsung One UI lock screen. Declared the way Samsung's own lock-screen widgets are (e.g. Voice Recorder):
+    a 2x1 "medium" widget whose targetHost includes lock_and_aod, plus samsung.appwidget.monotone.info.
+-->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:targetCellWidth="2" android:targetCellHeight="1"
+    android:updatePeriodMillis="1800000"
+    android:initialLayout="@layout/w_lock" android:previewLayout="@layout/w_lock"
+    app:initialLayoutMedium="@layout/w_lock" app:monotoneInitialLayoutMedium="@layout/w_lock"
+    app:previewLayoutMedium="@layout/w_lock" app:monotonePreviewLayoutMedium="@layout/w_lock"
+    app:targetHost="lock_and_aod|cover"
+    app:widgetSize="medium"
+    app:widgetStyle="monotone" />

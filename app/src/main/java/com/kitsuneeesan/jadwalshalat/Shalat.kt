@@ -1,4 +1,4 @@
-package com.rizki.jadwalshalat
+package com.kitsuneeesan.jadwalshalat
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -18,6 +18,29 @@ import java.time.LocalTime
 import java.util.Locale
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
+
+/** GET (or POST when [body] is given) a JSON endpoint; throws on an HTTP error status. Blocking. */
+fun requestJson(url: String, body: JSONObject? = null): JSONObject {
+    val conn = URL(url).openConnection() as HttpURLConnection
+    // Stay well inside the ~10s a widget broadcast receiver is allowed to run.
+    conn.connectTimeout = 8000
+    conn.readTimeout = 8000
+    if (body != null) {
+        conn.requestMethod = "POST"
+        conn.doOutput = true
+        conn.setRequestProperty("Content-Type", "application/json")
+        conn.outputStream.use { it.write(body.toString().toByteArray()) }
+    }
+    try {
+        val ok = conn.responseCode < 400
+        val json = JSONObject((if (ok) conn.inputStream else conn.errorStream).bufferedReader().use { it.readText() })
+        // EQuran.id puts a readable reason in "message" (e.g. an unknown kab/kota).
+        if (!ok) throw IOException(json.optString("message").ifEmpty { "HTTP ${conn.responseCode}" })
+        return json
+    } finally {
+        conn.disconnect()
+    }
+}
 
 object Shalat {
     val KEYS = listOf("subuh", "dzuhur", "ashar", "maghrib", "isya")
@@ -91,25 +114,8 @@ object Shalat {
             ?: o.firstOrNull { it.second.endsWith(" $n") || n.endsWith(" ${it.second}") }?.first
     }
 
-    private fun call(path: String, body: JSONObject?): JSONObject {
-        val conn = URL(API + path).openConnection() as HttpURLConnection
-        // Stay well inside the ~10s a widget broadcast receiver is allowed to run.
-        conn.connectTimeout = 8000
-        conn.readTimeout = 8000
-        if (body != null) {
-            conn.requestMethod = "POST"
-            conn.doOutput = true
-            conn.setRequestProperty("Content-Type", "application/json")
-            conn.outputStream.use { it.write(body.toString().toByteArray()) }
-        }
-        try {
-            val stream = if (conn.responseCode < 400) conn.inputStream else conn.errorStream
-            val json = JSONObject(stream.bufferedReader().use { it.readText() })
-            if (json.optInt("code") != 200) throw IOException(json.optString("message"))
-            return json
-        } finally {
-            conn.disconnect()
-        }
+    private fun call(path: String, body: JSONObject?) = requestJson(API + path, body).also {
+        if (it.optInt("code") != 200) throw IOException(it.optString("message"))
     }
 
     private fun JSONArray.strings() = List(length()) { getString(it) }

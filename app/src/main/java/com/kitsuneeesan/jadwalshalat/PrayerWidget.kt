@@ -1,14 +1,16 @@
-package com.rizki.jadwalshalat
+package com.kitsuneeesan.jadwalshalat
 
 import android.animation.ArgbEvaluator
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
+import android.appwidget.AppWidgetProviderInfo
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.res.ColorStateList
+import android.graphics.Color
 import android.os.Build
 import android.util.SizeF
 import android.view.View
@@ -23,6 +25,15 @@ import kotlin.concurrent.thread
 class PrayerWidget : BaseWidget()  // 4x2 card; also receives the tick/tap/app-updated broadcasts
 class GlassRow : BaseWidget()      // 4x1 schedule
 class WidgetNext : BaseWidget()    // 2x2 next prayer
+class PrayerLockWidget : BaseWidget() // 2x1 next prayer for Samsung's lock screen (see prayer_lock_info.xml)
+
+/** Whether widget [id] was placed on the lock screen rather than the home screen. */
+internal fun AppWidgetManager.isOnLockScreen(id: Int) =
+    getAppWidgetOptions(id).getInt(AppWidgetManager.OPTION_APPWIDGET_HOST_CATEGORY, -1) ==
+        AppWidgetProviderInfo.WIDGET_CATEGORY_KEYGUARD
+
+/** Remove the glass panel (every widget layout's root is R.id.root), leaving the content transparent. */
+internal fun RemoteViews.clearBackground() = setInt(R.id.root, "setBackgroundColor", Color.TRANSPARENT)
 
 abstract class BaseWidget : AppWidgetProvider() {
 
@@ -70,14 +81,15 @@ abstract class BaseWidget : AppWidgetProvider() {
     }
 
     companion object {
-        private const val TICK = "com.rizki.jadwalshalat.TICK"
-        private const val TAP = "com.rizki.jadwalshalat.REFRESH"
+        private const val TICK = "com.kitsuneeesan.jadwalshalat.TICK"
+        private const val TAP = "com.kitsuneeesan.jadwalshalat.REFRESH"
 
         /** Provider -> layout to use where sized layouts aren't supported (< Android 12). */
         private val TYPES = listOf(
             PrayerWidget::class.java to R.layout.w_card,
             GlassRow::class.java to R.layout.w_row,
             WidgetNext::class.java to R.layout.w_small,
+            PrayerLockWidget::class.java to R.layout.w_lock,
         )
 
         /**
@@ -199,15 +211,23 @@ abstract class BaseWidget : AppWidgetProvider() {
         /** Blocking (may hit the network); call off the main thread. */
         fun render(c: Context) {
             val manager = AppWidgetManager.getInstance(c)
-            val targets = TYPES.map { (cls, fallback) -> manager.getAppWidgetIds(ComponentName(c, cls)) to fallback }
-                .filter { it.first.isNotEmpty() }
+            val targets = TYPES.map { (cls, fallback) -> Triple(cls, manager.getAppWidgetIds(ComponentName(c, cls)), fallback) }
+                .filter { it.second.isNotEmpty() }
             val am = c.getSystemService(AlarmManager::class.java)
             if (targets.isEmpty()) return am.cancel(tickIntent(c))
             val s = state(c)
-            targets.forEach { (ids, fallback) ->
-                val rv = if (Build.VERSION.SDK_INT >= 31) RemoteViews(SIZES.associate { (size, layout) -> size to views(c, layout, s) })
-                else views(c, fallback, s)
-                manager.updateAppWidget(ids, rv)
+            targets.forEach { (cls, ids, fallback) ->
+                // Lock-screen copies drop the glass panel and sit straight on the wallpaper.
+                // Samsung's lock-screen slot has one fixed size and its own short layout.
+                if (cls == PrayerLockWidget::class.java) {
+                    return@forEach manager.updateAppWidget(ids, views(c, R.layout.w_lock, s).also { it.clearBackground() })
+                }
+                ids.groupBy { manager.isOnLockScreen(it) }.forEach { (lock, group) ->
+                    fun build(layout: Int) = views(c, layout, s).also { if (lock) it.clearBackground() }
+                    val rv = if (Build.VERSION.SDK_INT >= 31) RemoteViews(SIZES.associate { (size, layout) -> size to build(layout) })
+                    else build(fallback)
+                    manager.updateAppWidget(group.toIntArray(), rv)
+                }
             }
 
             // Re-render just after the next minute boundary so the countdown stays in step with the clock.

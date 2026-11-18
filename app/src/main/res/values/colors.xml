@@ -19,4 +19,6 @@
     <color name="w_warn">#C98A12</color>
     <color name="w_late">#D64541</color>
     <color name="w_shadow">#00000000</color>
+    <!-- Text shadow for the Quran widgets, which have no panel behind them (same in light and dark). -->
+    <color name="q_shadow">#73000000</color>
 </resources>

@@ -42,5 +42,25 @@
             </intent-filter>
             <meta-data android:name="android.appwidget.provider" android:resource="@xml/glass_row_info" />
         </receiver>
+        <receiver android:name=".QuranWidget" android:label="@string/widget_quran" android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/quran_widget_info" />
+        </receiver>
+        <receiver android:name=".QuranRowWidget" android:label="@string/widget_quran_row" android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/quran_row_info" />
+        </receiver>
+        <receiver android:name=".PrayerLockWidget" android:label="@string/widget_prayer_lock" android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/prayer_lock_info" />
+            <meta-data android:name="samsung.appwidget.monotone.info" android:resource="@xml/prayer_lock_info_samsung" />
+        </receiver>
     </application>
 </manifest>

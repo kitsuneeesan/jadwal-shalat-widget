@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application>
-        <!-- adb shell am start -n com.rizki.jadwalshalat/.PreviewActivity -->
+        <!-- adb shell am start -n com.kitsuneeesan.jadwalshalat/.PreviewActivity -->
         <activity android:name=".PreviewActivity" android:exported="true" />
         <!-- Marketing shots; usage in ShowcaseActivity.kt -->
         <activity android:name=".ShowcaseActivity" android:exported="true"

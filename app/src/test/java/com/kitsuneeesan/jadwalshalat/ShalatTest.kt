@@ -1,4 +1,4 @@
-package com.rizki.jadwalshalat
+package com.kitsuneeesan.jadwalshalat
 
 import org.junit.Assert.assertEquals
 import org.junit.Test

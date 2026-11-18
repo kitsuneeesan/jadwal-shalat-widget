@@ -1,0 +1,50 @@
+<resources>
+    <!--
+        Samsung One UI reads these from a widget's provider XML (by name, in the app's own namespace) to decide
+        where the widget may be placed. Values mirror Samsung's own apps (e.g. Voice Recorder's lock-screen widget).
+    -->
+    <attr name="targetHost">
+        <flag name="home" value="0x1" />
+        <flag name="lock_and_aod" value="0x2" />
+        <flag name="cover" value="0x4" />
+        <flag name="edge" value="0x8" />
+        <flag name="dex_home" value="0x10" />
+        <flag name="smart_page" value="0x20" />
+    </attr>
+    <attr name="widgetSize">
+        <flag name="tiny" value="0x1" />
+        <flag name="small" value="0x2" />
+        <flag name="wideSmall" value="0x4" />
+        <flag name="medium" value="0x8" />
+        <flag name="large" value="0x10" />
+    </attr>
+    <attr name="widgetStyle">
+        <flag name="colorful" value="0x1" />
+        <flag name="monotone" value="0x2" />
+    </attr>
+    <attr name="featuredWidget">
+        <flag name="tiny" value="0x1" />
+        <flag name="small" value="0x2" />
+        <flag name="wideSmall" value="0x4" />
+        <flag name="medium" value="0x8" />
+        <flag name="large" value="0x10" />
+    </attr>
+    <attr name="previewSize">
+        <flag name="tiny" value="0x1" />
+        <flag name="small" value="0x2" />
+        <flag name="wideSmall" value="0x4" />
+        <flag name="medium" value="0x8" />
+        <flag name="large" value="0x10" />
+    </attr>
+    <attr name="targetConfigureSize">
+        <flag name="tiny" value="0x1" />
+        <flag name="small" value="0x2" />
+        <flag name="wideSmall" value="0x4" />
+        <flag name="medium" value="0x8" />
+        <flag name="large" value="0x10" />
+    </attr>
+    <attr name="initialLayoutMedium" format="reference" />
+    <attr name="previewLayoutMedium" format="reference" />
+    <attr name="monotoneInitialLayoutMedium" format="reference" />
+    <attr name="monotonePreviewLayoutMedium" format="reference" />
+</resources>

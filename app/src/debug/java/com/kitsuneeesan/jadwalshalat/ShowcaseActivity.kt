@@ -1,4 +1,4 @@
-package com.rizki.jadwalshalat
+package com.kitsuneeesan.jadwalshalat
 
 import android.app.Activity
 import android.content.Context
@@ -16,7 +16,7 @@ import kotlin.concurrent.thread
 
 /**
  * Debug only: marketing shots for the README / social posts.
- *   adb shell am start -n com.rizki.jadwalshalat/.ShowcaseActivity --es scene night|day|logo
+ *   adb shell am start -n com.kitsuneeesan.jadwalshalat/.ShowcaseActivity --es scene night|day|logo|quran
  */
 class ShowcaseActivity : Activity() {
     private val dp by lazy { resources.displayMetrics.density }
@@ -30,6 +30,7 @@ class ShowcaseActivity : Activity() {
         window.insetsController?.hide(WindowInsets.Type.systemBars())
         when (val scene = intent.getStringExtra("scene") ?: "night") {
             "logo" -> logo(root)
+            "quran" -> quran(root)
             else -> widgets(root, night = scene == "night")
         }
     }
@@ -46,6 +47,29 @@ class ShowcaseActivity : Activity() {
             setColorFilter(Color.WHITE)
         }, FrameLayout.LayoutParams(px(130f), px(130f), Gravity.CENTER))
         root.addView(tile, FrameLayout.LayoutParams(px(220f), px(220f), Gravity.CENTER))
+    }
+
+    /** The Quran widget at 4x2 and 4x1 (both transparent) on the night wallpaper. */
+    private fun quran(root: FrameLayout) {
+        root.addView(ImageView(this).apply {
+            setImageResource(R.drawable.showcase_night)
+            scaleType = ImageView.ScaleType.CENTER_CROP
+        })
+        val width = (resources.displayMetrics.widthPixels / dp - 32).toInt()
+        val col = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
+        root.addView(col, FrameLayout.LayoutParams(px(width.toFloat()), FrameLayout.LayoutParams.WRAP_CONTENT, Gravity.CENTER))
+        thread {
+            val views = listOf(210, 96).map { it to QuranWidget.layout(this, width, it, compact = it < 150) }
+            runOnUiThread {
+                views.forEachIndexed { i, (height, rv) ->
+                    val frame = FrameLayout(this)
+                    frame.addView(rv.apply(this, frame))
+                    col.addView(frame, LinearLayout.LayoutParams(px(width.toFloat()), px(height.toFloat())).apply {
+                        if (i > 0) topMargin = px(28f)
+                    })
+                }
+            }
+        }
     }
 
     private fun widgets(root: FrameLayout, night: Boolean) {

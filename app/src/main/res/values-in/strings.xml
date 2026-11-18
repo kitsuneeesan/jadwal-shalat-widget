@@ -30,4 +30,15 @@
     <string name="not_detected">Lokasi tidak terdeteksi, pakai lokasi terakhir.</string>
     <string name="list_failed">Gagal memuat daftar: %1$s</string>
     <string name="schedule_failed">Gagal memuat jadwal: %1$s</string>
+    <string name="widget_quran">Ayat Al-Qur\'an</string>
+    <string name="verse_of">Ayat %1$d dari %2$d</string>
+    <string name="surah_n">Surat %1$d</string>
+    <string name="quran_offline">Surat ini belum tersimpan. Sambungkan internet sekali untuk mengunduhnya.</string>
+    <string name="quran">Al-Qur\'an</string>
+    <string name="save_quran">Simpan semua surat offline</string>
+    <string name="saving_quran">Menyimpan surat… %1$d/114</string>
+    <string name="quran_saved">Semua 114 surat sudah tersimpan offline</string>
+    <string name="quran_save_failed">Tersimpan %1$d dari 114 surat. Cek koneksi lalu coba lagi.</string>
+    <string name="widget_quran_row">Ayat Al-Qur\'an · Baris</string>
+    <string name="widget_prayer_lock">Jadwal Shalat · Layar kunci</string>
 </resources>

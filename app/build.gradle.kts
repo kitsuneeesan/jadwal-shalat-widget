@@ -3,15 +3,15 @@ plugins {
 }
 
 android {
-    namespace = "com.rizki.jadwalshalat"
+    namespace = "com.kitsuneeesan.jadwalshalat"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.rizki.jadwalshalat"
+        applicationId = "com.kitsuneeesan.jadwalshalat"
         minSdk = 26
         targetSdk = 36
-        versionCode = 2
-        versionName = "0.2.0"
+        versionCode = 3
+        versionName = "0.3.0"
     }
 
     compileOptions {

@@ -30,4 +30,15 @@
     <string name="not_detected">Location not detected, using the last one.</string>
     <string name="list_failed">Couldn\'t load the list: %1$s</string>
     <string name="schedule_failed">Couldn\'t load the schedule: %1$s</string>
+    <string name="widget_quran">Quran Verse</string>
+    <string name="verse_of">Verse %1$d of %2$d</string>
+    <string name="surah_n">Surah %1$d</string>
+    <string name="quran_offline">This surah isn\'t saved yet. Connect to the internet once to download it.</string>
+    <string name="quran">Quran</string>
+    <string name="save_quran">Save all surahs offline</string>
+    <string name="saving_quran">Saving surahs… %1$d/114</string>
+    <string name="quran_saved">All 114 surahs are saved offline</string>
+    <string name="quran_save_failed">Saved %1$d of 114 surahs. Check your connection and try again.</string>
+    <string name="widget_quran_row">Quran Verse · Row</string>
+    <string name="widget_prayer_lock">Prayer Times · Lock screen</string>
 </resources>

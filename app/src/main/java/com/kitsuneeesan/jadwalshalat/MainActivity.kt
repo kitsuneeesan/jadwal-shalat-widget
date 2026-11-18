@@ -1,4 +1,4 @@
-package com.rizki.jadwalshalat
+package com.kitsuneeesan.jadwalshalat
 
 import android.Manifest
 import android.app.Activity
@@ -15,6 +15,7 @@ import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.LinearLayout
+import android.widget.ScrollView
 import android.widget.Spinner
 import android.widget.Switch
 import android.widget.TextView
@@ -68,9 +69,12 @@ class MainActivity : Activity() {
         exactAlarm = button(R.string.exact_alarm) {
             startActivity(Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM, Uri.parse("package:$packageName")))
         }
+        col.addView(label(getString(R.string.quran), 18f))
+        val quranButton = button(R.string.save_quran) {}
+        quranButton.setOnClickListener { saveQuran(quranButton) }
         button(R.string.done) { finish() }
         status = label("").also(col::addView)
-        setContentView(FrameLayout(this).apply { fitsSystemWindows = true; addView(col) })
+        setContentView(FrameLayout(this).apply { fitsSystemWindows = true; addView(ScrollView(this@MainActivity).apply { addView(col) }) })
 
         province.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(p: AdapterView<*>?, v: View?, pos: Int, id: Long) {
@@ -125,6 +129,23 @@ class MainActivity : Activity() {
                 spinner.adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, it)
                 spinner.setSelection(it.indexOf(selected).coerceAtLeast(0))
             }.onFailure { status.text = getString(R.string.list_failed, it.message) }
+        }
+    }
+
+    /** Download every surah that isn't saved yet, so the verse widget works fully offline. */
+    private fun saveQuran(button: Button) {
+        button.isEnabled = false
+        thread {
+            var saved = 0
+            for (n in 1..114) {
+                if (runCatching { Quran.surah(this, n) }.isSuccess) saved++
+                runOnUiThread { button.text = getString(R.string.saving_quran, n) }
+            }
+            QuranWidget.render(this)
+            runOnUiThread {
+                button.isEnabled = true
+                button.text = if (saved == 114) getString(R.string.quran_saved) else getString(R.string.quran_save_failed, saved)
+            }
         }
     }
 

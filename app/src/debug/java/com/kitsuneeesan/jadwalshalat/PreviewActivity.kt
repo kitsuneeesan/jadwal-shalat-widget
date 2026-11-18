@@ -1,4 +1,4 @@
-package com.rizki.jadwalshalat
+package com.kitsuneeesan.jadwalshalat
 
 import android.app.Activity
 import android.content.res.Configuration
@@ -26,6 +26,18 @@ class PreviewActivity : Activity() {
         // Typical cell sizes (dp) for the buckets in BaseWidget.sizes(): tiny, row, small, tall, card.
         val real = listOf(188 to 96, 401 to 96, 188 to 218, 188 to 340, 401 to 218)
         thread {
+            val quranWidth = (resources.displayMetrics.widthPixels / dp).toInt() - 32
+            // The Quran widget at 4x2 and at 4x1 (compact layout).
+            val quran = listOf(210, 96).map { it to QuranWidget.layout(this, quranWidth, it, compact = it < 150) }
+            runOnUiThread {
+                for ((height, views) in quran) {
+                    val frame = FrameLayout(this)
+                    frame.addView(views.apply(this, frame))
+                    col.addView(frame, LinearLayout.LayoutParams((quranWidth * dp).toInt(), (height * dp).toInt()).apply {
+                        bottomMargin = (12 * dp).toInt()
+                    })
+                }
+            }
             val previews = BaseWidget.previews(this)
             runOnUiThread {
                 for (p in listOf(0.3f, 0.65f, 0.9f, 1f)) {

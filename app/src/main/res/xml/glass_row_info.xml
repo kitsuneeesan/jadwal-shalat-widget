@@ -6,6 +6,6 @@
     android:resizeMode="horizontal|vertical"
     android:updatePeriodMillis="1800000"
     android:initialLayout="@layout/w_row" android:previewLayout="@layout/w_row"
-    android:configure="com.rizki.jadwalshalat.MainActivity"
+    android:configure="com.kitsuneeesan.jadwalshalat.MainActivity"
     android:widgetFeatures="reconfigurable"
-    android:widgetCategory="home_screen" />
+    android:widgetCategory="home_screen|keyguard" />
